@@ -1,0 +1,4 @@
+#Fri Mar 15 10:42:49 CST 2019
+base.0=D\:\\workspace\\demo\\Test\\ImageLoader-master\\ImageLoader-master\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\1
+path.0=classes.dex
+renamed.0=classes.dex

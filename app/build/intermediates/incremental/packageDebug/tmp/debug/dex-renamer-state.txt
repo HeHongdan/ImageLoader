@@ -1,0 +1,4 @@
+#Fri Mar 15 12:54:33 CST 2019
+base.0=D\:\\workspace\\demo\\Test\\ImageLoader\\ImageLoader\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out
+path.0=classes.dex
+renamed.0=classes.dex

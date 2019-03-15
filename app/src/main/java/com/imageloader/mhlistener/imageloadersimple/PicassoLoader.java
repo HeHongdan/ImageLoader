@@ -24,6 +24,8 @@ import com.squareup.picasso.Transformation;
 import java.io.File;
 
 /**
+ * Picasso图片加载框架（实现统一接口）
+ *
  * Created by JohnsonFan on 2017/6/27.
  */
 
