@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
 		//使用方式
 		ImageView imageView = findViewById(R.id.imageview);
-		String url = "http://ww2.sinaimg.cn/large/7a8aed7bgw1eutsd0pgiwj20go0p0djn.jpg";
+		String url = "https://ww2.sinaimg.cn/large/7a8aed7bgw1eutsd0pgiwj20go0p0djn.jpg";
 		ImageLoader.getInstance()
 				.load(url)
 				.angle(80)

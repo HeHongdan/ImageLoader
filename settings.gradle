@@ -1,1 +1,3 @@
-include ':app', ':imageloaderlib'
+include ':app'
+include ':imageloaderlib'
+rootProject.name = "ImageLoader"
