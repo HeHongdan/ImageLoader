@@ -3,35 +3,33 @@ package com.imageloader.mhlistener.imageloadersimple.loader;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory;
-import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-import com.imageloader.mhlistener.imageloaderlib.BitmapCallBack;
 import com.imageloader.mhlistener.imageloaderlib.ILoaderStrategy;
 import com.imageloader.mhlistener.imageloaderlib.LoaderOptions;
 import com.imageloader.mhlistener.imageloadersimple.App;
-import com.imageloader.mhlistener.imageloadersimple.utils.ImageUtils;
 
 import java.io.File;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+import jp.wasabeef.glide.transformations.gpu.PixelationFilterTransformation;
 
 /**
  * 类描述：Glide 图片加载框架（实现统一接口）
@@ -44,38 +42,13 @@ public class GlideLoader implements ILoaderStrategy {
 
     /** 磁盘缓存路径。 */
     private final String GLIDE_CACHE = "picasso-cache";
-    /** (本框架)位图加载回调。 */
-    private BitmapCallBack callBack;
-    /** (Glide)加载结果回调。 */
-    private RequestListener listener = new RequestListener() {
-        @Override
-        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
-            if (callBack != null) {
-                callBack.onBitmapFailed(e);
-            }
-            Log.d("【HHD】", "Glide 加载失败= " + e);
-            return false;
-        }
 
-        @Override
-        public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-            if (callBack != null) {
-                Bitmap bitmap = null;
-                if (target instanceof Drawable) {
-                    bitmap = ImageUtils.drawable2Bitmap((Drawable) target);
-                }
-                callBack.onBitmapLoaded(bitmap);
-                Log.d("【HHD】", "Glide 加载(完成)成功");
-            }
 
-            return false;
-        }
-    };
 
 
     @SuppressLint("CheckResult")
     @Override
-    public void loadImage(@NonNull LoaderOptions options) {
+    public void loadImage(final @NonNull LoaderOptions options) {
         RequestOptions requestOptions = new RequestOptions();
 //        if (requestOptions == null) {
 //            throw new NullPointerException("Glide 的 RequestOptions 必须不能为空");
@@ -83,6 +56,8 @@ public class GlideLoader implements ILoaderStrategy {
         // 设置宽高
         if (options.targetHeight > 0 && options.targetWidth > 0) {
             requestOptions.override(options.targetWidth, options.targetHeight);
+        } else {
+            requestOptions.override(Target.SIZE_ORIGINAL);
         }
         // 设置裁剪方式
         if (options.isCenterInside) {
@@ -134,82 +109,110 @@ public class GlideLoader implements ILoaderStrategy {
         //进(出)场动画
 //			requestCreator.transform();
 
+        //圆角
+        if (options.bitmapAngle != 0) {
+            if (true) {
+                requestOptions = requestOptions.transform(new RoundedCorners((int) options.bitmapAngle));
+            } else {
+                //Crop
+                //CropTransformation
+                //CropCircleTransformation
+                //CropCircleWithBorderTransformation
+                //CropSquareTransformation
+                //RoundedCornersTransformation
+                //Color
+                //ColorFilterTransformation
+                //GrayscaleTransformation
+                //Blur
+                //BlurTransformation
+                //Mask
+                //MaskTransformation
 
-        if (true) {//FIXME
-            //圆角、旋转角度
-            if (options.degrees != 0) {
-                requestOptions = RequestOptions.bitmapTransform(new GlideBitmapTransformation((int) options.bitmapAngle, options.degrees));
-            }
-        } else {
-            //圆角
-            if (options.bitmapAngle != 0) {
-                if (true) {
-                    requestOptions = requestOptions.bitmapTransform(new GlideBitmapTransformation((int) options.bitmapAngle));
-//					requestCreator.transforms(new RoundedCorners(20),new CenterCrop());
-                } else {
-                    //圆形
-                    requestOptions.circleCrop();
-                }
+                //GPU Filter (use GPUImage)
+                //ToonFilterTransformation
+                //SepiaFilterTransformation
+                //ContrastFilterTransformation
+                //InvertFilterTransformation
+                //PixelationFilterTransformation
+                //SketchFilterTransformation
+                //SwirlFilterTransformation
+                //BrightnessFilterTransformation
+                //KuwaharaFilterTransformation
+                //VignetteFilterTransformation
+                requestOptions = requestOptions.transforms(new PixelationFilterTransformation(), new RoundedCornersTransformation((int) options.bitmapAngle,0));
             }
         }
 
-        RequestManager manager = Glide.with(options.targetView.getContext());
-        if (false) {
-            manager.clear(new CustomTarget() {
-                @Override
-                public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                    super.onLoadFailed(errorDrawable);
 
-                    Log.d("【HHD】", "1-Glide 加载失败= ");
-                }
 
-                @Override
-                public void onResourceReady(@NonNull Object resource, @Nullable Transition transition) {
-                    Log.d("【HHD】", "2-Glide onResourceReady= ");
-                }
 
-                @Override
-                public void onLoadCleared(@Nullable Drawable placeholder) {
-                    Log.d("【HHD】", "3-Glide onLoadCleared= ");
-                }
-            });
-        }
+        // 设置图片加载的目标控件
+        if (options.targetView instanceof ImageView) {
+            RequestBuilder<Drawable> builder = null;
+//            RequestBuilder<GifDrawable> builder = null;
+//            RequestBuilder<File> builder = null;
+//            RequestBuilder<Bitmap> builder = null;
 
-        RequestBuilder<Drawable> builder = null;
-//		RequestBuilder<GifDrawable> builder = null;
-//		RequestBuilder<File> builder = null;
-//		RequestBuilder<Bitmap> builder = null;
-
-        if (options.url != null) {
-            builder = manager.load(options.url);
-        } else if (options.file != null) {
-            builder = manager.load(options.file);
-        } else if (options.drawableResId != 0) {
-            builder = manager.load(options.drawableResId);
-        } else if (options.uri != null) {
-            builder = manager.load(options.uri);
-        }
-
-        if (builder != null) {
-            builder.apply(requestOptions);
-
-            callBack = options.callBack;
-            // 设置图片加载的目标控件
-            if (options.targetView instanceof ImageView) {
-                ImageView imageView = (ImageView) options.targetView;
-
-                if (callBack != null) {
-                    builder.listener(listener).into(imageView);
-                } else {
-                    builder.into(imageView);
-                }
-            } else if (callBack != null) {
-                callBack.onBitmapFailed(new Exception("Glide 加载对象必须是 ImageView"));
-//				requestCreator.into(new PicassoLoader.PicassoTarget(options.callBack));
+            RequestManager manager = Glide.with(options.targetView.getContext());
+            if (options.url != null) {
+                builder = manager.load(options.url);
+            } else if (options.file != null) {
+                builder = manager.load(options.file);
+            } else if (options.drawableResId != 0) {
+                builder = manager.load(options.drawableResId);
+            } else if (options.uri != null) {
+                builder = manager.load(options.uri);
             }
+
+            ImageView imageView = (ImageView) options.targetView;
+            if (builder != null) {
+                builder.apply(requestOptions).into(imageView);
+            } else {
+                Glide.with(imageView.getContext()).load(options.errorResId).into(imageView);
+            }
+        } else if (options.callBack != null) {
+            makeBitmap(options, requestOptions);
         }
 
     }
+
+    private void makeBitmap(final LoaderOptions options, final RequestOptions requestOptions) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (options.url != null) {
+                        //阻塞执行
+                        FutureTarget<File> target = Glide.with(App.gApp)//FIXME
+                                .load(options.url)
+                                .apply(requestOptions)//FIXME
+                                .downloadOnly(options.targetWidth, options.targetHeight);
+//                                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                        final File imageFile = target.get();
+
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (imageFile != null) {
+                                    options.callBack.onBitmapLoaded(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+                                } else {
+                                    throw new NullPointerException("图片文件为空。");
+                                }
+                            }
+                        });
+
+                    } else {
+                        throw new IllegalArgumentException("图片的 Url 不能为空。");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                    options.callBack.onBitmapFailed(e);
+                }
+            }
+        }).start();
+    }
+
 
     @Override
     public void clearMemoryCache() {

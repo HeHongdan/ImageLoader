@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.imageloader.mhlistener.imageloadersimple"
         minSdkVersion 22
-        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -35,6 +35,8 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
+    implementation 'jp.co.cyberagent.android:gpuimage:2.1.0'
 
     implementation project(path: ':imageloaderlib')
 

@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 	 *
 	 * @param imageView 显示图片组件。
 	 */
-	private void loadImage(ImageView imageView) {
+	private void loadImage(final ImageView imageView) {
 		String url = "https://ww2.sinaimg.cn/large/7a8aed7bgw1eutsd0pgiwj20go0p0djn.jpg";
 		LoaderOptions rotate = ImageLoader.getInstance()
 				.load(url)
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onBitmapLoaded(Bitmap bitmap) {
 					Log.d("【HHD】", "加载成功= " + bitmap);
+					imageView.setImageBitmap(bitmap);
 				}
 
 				@Override
