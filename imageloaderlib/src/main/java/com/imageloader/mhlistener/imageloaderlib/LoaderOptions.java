@@ -3,8 +3,9 @@ package com.imageloader.mhlistener.imageloaderlib;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.DrawableRes;
 import android.view.View;
+
+import androidx.annotation.DrawableRes;
 
 import java.io.File;
 

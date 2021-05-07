@@ -1,4 +1,4 @@
-package com.imageloader.mhlistener.imageloadersimple;
+package com.imageloader.mhlistener.imageloadersimple.loader;
 
 /**
  * 类描述：Fresco图片加载框架（实现统一接口）
