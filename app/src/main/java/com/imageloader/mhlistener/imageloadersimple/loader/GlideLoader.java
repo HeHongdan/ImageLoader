@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.imageloader.mhlistener.imageloaderlib.ILoaderStrategy;
 import com.imageloader.mhlistener.imageloaderlib.LoaderOptions;
 import com.imageloader.mhlistener.imageloadersimple.App;
+import com.imageloader.mhlistener.imageloadersimple.utils.ImageUtils;
 
 import java.io.File;
 
@@ -181,20 +182,26 @@ public class GlideLoader implements ILoaderStrategy {
             @Override
             public void run() {
                 try {
-                    if (options.url != null) {
+                    Context context;
+                    if (options.targetView != null) {
+                        context = options.targetView.getContext();
+                    } else {
+                        context = App.gApp;
+                    }
+                    if (options.url != null && context != null) {
                         //阻塞执行
-                        FutureTarget<File> target = Glide.with(App.gApp)//FIXME
+                        FutureTarget<Drawable> submit = Glide.with(context)//FIXME
                                 .load(options.url)
-                                .apply(requestOptions)//FIXME
-                                .downloadOnly(options.targetWidth, options.targetHeight);
+                                .apply(requestOptions)
+                                .submit(options.targetWidth, options.targetHeight);
 //                                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
-                        final File imageFile = target.get();
+                        final Drawable drawable = submit.get();
 
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                if (imageFile != null) {
-                                    options.callBack.onBitmapLoaded(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+                                if (drawable != null) {
+                                    options.callBack.onBitmapLoaded(ImageUtils.drawable2Bitmap(drawable));
                                 } else {
                                     throw new NullPointerException("图片文件为空。");
                                 }
